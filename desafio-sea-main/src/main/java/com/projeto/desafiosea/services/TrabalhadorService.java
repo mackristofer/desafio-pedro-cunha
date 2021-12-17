@@ -17,7 +17,7 @@ import com.projeto.desafiosea.entities.Cargo;
 import com.projeto.desafiosea.entities.Trabalhador;
 import com.projeto.desafiosea.repositories.CargoRepository;
 import com.projeto.desafiosea.repositories.TrabalhadorRepository;
-import com.projeto.desafiosea.services.exceptions.DatabaseException;
+import com.projeto.desafiosea.services.exceptions.DataBaseException;
 import com.projeto.desafiosea.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -25,10 +25,10 @@ public class TrabalhadorService {
 
 	@Autowired
 	private TrabalhadorRepository repository;
-	
+
 	@Autowired
 	private CargoRepository cargoRepository;
-	
+
 	@Transactional(readOnly = true)
 	public List<TrabalhadorDTO> findAll() {
 		List<Trabalhador> list = repository.findAll();
@@ -44,15 +44,19 @@ public class TrabalhadorService {
 
 	@Transactional
 	public TrabalhadorDTO insert(TrabalhadorDTO dto) {
-		Trabalhador entity = new Trabalhador();
-		entity.setName(dto.getName());
-		entity.setCpf(dto.getCpf());
-		entity.setSexo(dto.getSexo());
-		@SuppressWarnings("deprecation")
-		Cargo cargo = cargoRepository.getOne(dto.getCargo().getId());
-		entity.setCargo(cargo);
-		entity = repository.save(entity);
-		return new TrabalhadorDTO(entity);
+		try {
+			Trabalhador entity = new Trabalhador();
+			entity.setName(dto.getName());
+			entity.setCpf(dto.getCpf());
+			entity.setSexo(dto.getSexo());
+			@SuppressWarnings("deprecation")
+			Cargo cargo = cargoRepository.getOne(dto.getCargo().getId());
+			entity.setCargo(cargo);
+			entity = repository.save(entity);
+			return new TrabalhadorDTO(entity);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataBaseException("Integrity violation");
+		}
 	}
 
 	@Transactional
@@ -69,7 +73,9 @@ public class TrabalhadorService {
 			return new TrabalhadorDTO(entity);
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
-		}
+		}catch(DataIntegrityViolationException e){
+			throw new DataBaseException("Integrity violation");
+		}	
 	}
 
 	public void delete(Long id) {
@@ -78,7 +84,7 @@ public class TrabalhadorService {
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
 		} catch (DataIntegrityViolationException e) {
-			throw new DatabaseException("Integrity violation");
+			throw new DataBaseException("Integrity violation");
 		}
 	}
 

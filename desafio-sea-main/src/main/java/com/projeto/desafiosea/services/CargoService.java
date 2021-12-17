@@ -17,7 +17,7 @@ import com.projeto.desafiosea.entities.Cargo;
 import com.projeto.desafiosea.entities.Setor;
 import com.projeto.desafiosea.repositories.CargoRepository;
 import com.projeto.desafiosea.repositories.SetorRepository;
-import com.projeto.desafiosea.services.exceptions.DatabaseException;
+import com.projeto.desafiosea.services.exceptions.DataBaseException;
 import com.projeto.desafiosea.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -25,11 +25,10 @@ public class CargoService {
 
 	@Autowired
 	private CargoRepository repository;
-	
 
 	@Autowired
 	private SetorRepository setorRepository;
-	
+
 	@Transactional(readOnly = true)
 	public List<CargoDTO> findAll() {
 		List<Cargo> list = repository.findAll();
@@ -45,13 +44,17 @@ public class CargoService {
 
 	@Transactional
 	public CargoDTO insert(CargoDTO dto) {
-		Cargo entity = new Cargo();
-		entity.setName(dto.getName());
-		@SuppressWarnings("deprecation")
-		Setor setor = setorRepository.getOne(dto.getSetor().getId());
-		entity.setSetor(setor);
-		entity = repository.save(entity);
-		return new CargoDTO(entity);
+		try {
+			Cargo entity = new Cargo();
+			entity.setName(dto.getName());
+			@SuppressWarnings("deprecation")
+			Setor setor = setorRepository.getOne(dto.getSetor().getId());
+			entity.setSetor(setor);
+			entity = repository.save(entity);
+			return new CargoDTO(entity);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataBaseException("Integrity violation");
+		}
 	}
 
 	@Transactional
@@ -67,6 +70,9 @@ public class CargoService {
 			return new CargoDTO(entity);
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
+		} catch (
+		DataIntegrityViolationException e) {
+			throw new DataBaseException("Integrity violation");
 		}
 	}
 
@@ -76,7 +82,7 @@ public class CargoService {
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
 		} catch (DataIntegrityViolationException e) {
-			throw new DatabaseException("Integrity violation");
+			throw new DataBaseException("Integrity violation");
 		}
 	}
 

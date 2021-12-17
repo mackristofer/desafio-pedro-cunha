@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.projeto.desafiosea.dto.SetorDTO;
 import com.projeto.desafiosea.entities.Setor;
 import com.projeto.desafiosea.repositories.SetorRepository;
-import com.projeto.desafiosea.services.exceptions.DatabaseException;
+import com.projeto.desafiosea.services.exceptions.DataBaseException;
 import com.projeto.desafiosea.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -39,10 +39,14 @@ public class SetorService {
 
 	@Transactional
 	public SetorDTO insert(SetorDTO dto) {
+		try {
 		Setor entity = new Setor();
 		entity.setName(dto.getName());
 		entity = repository.save(entity);
 		return new SetorDTO(entity);
+		}catch(DataIntegrityViolationException e){
+			throw new DataBaseException("Integrity violation");
+		}	
 	}
 
 	@Transactional
@@ -56,6 +60,9 @@ public class SetorService {
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
 		}
+	    catch(DataIntegrityViolationException e){
+		throw new DataBaseException("Integrity violation");
+	}	
 	}
 
 	public void delete(Long id) {
@@ -64,7 +71,7 @@ public class SetorService {
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
 		} catch (DataIntegrityViolationException e) {
-			throw new DatabaseException("Integrity violation");
+			throw new DataBaseException("Integrity violation");
 		}
 	}
 
