@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="tb_trabalhador")
+@Table(name = "tb_trabalhador")
 public class Trabalhador implements Serializable{
 	private static final long serialVersionUID = 1L;
 
@@ -20,6 +20,7 @@ public class Trabalhador implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
+	
 	@Column(unique = true)
 	private String cpf;
 	private String sexo;
@@ -27,19 +28,20 @@ public class Trabalhador implements Serializable{
 	@ManyToOne
 	@JoinColumn(name = "cargo_id")
 	private Cargo cargo;
-
+	
 	
 	public Trabalhador() {
 		
 	}
 
-	public Trabalhador(Long id, String name, String cpf, String sexo, String setor, Cargo cargo) {
-		super();
+	public Trabalhador(Long id, String name, String cpf, String sexo, Cargo cargo) {
+		
 		this.id = id;
 		this.name = name;
 		this.cpf = cpf;
 		this.sexo = sexo;
 		this.cargo = cargo;
+		
 	}
 
 	public Long getId() {
@@ -74,7 +76,6 @@ public class Trabalhador implements Serializable{
 		this.sexo = sexo;
 	}
 
-
 	public Cargo getCargo() {
 		return cargo;
 	}
@@ -82,8 +83,7 @@ public class Trabalhador implements Serializable{
 	public void setCargo(Cargo cargo) {
 		this.cargo = cargo;
 	}
-
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

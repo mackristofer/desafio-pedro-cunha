@@ -15,32 +15,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.projeto.desafiosea.dto.SetorDTO;
-import com.projeto.desafiosea.services.SetorService;
+import com.projeto.desafiosea.dto.TrabalhadorDTO;
+import com.projeto.desafiosea.services.TrabalhadorService;
 
 
 @RestController
-@RequestMapping(value = "/setor")
-public class SetorController {
+@RequestMapping(value = "/trabalhador")
+public class TrabalhadorController {
 	
 	@Autowired
-	private SetorService service;
+	private TrabalhadorService service;
 	
 	@GetMapping
-	public ResponseEntity<List<SetorDTO>> findAll(){
-			List<SetorDTO> list = service.findAll();
+	public ResponseEntity<List<TrabalhadorDTO>> findAll(){
+			List<TrabalhadorDTO> list = service.findAll();
 			return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<SetorDTO> finById(@PathVariable Long id) {
-		SetorDTO dto = service.findById(id);
+	public ResponseEntity<TrabalhadorDTO> finById(@PathVariable Long id) {
+		TrabalhadorDTO dto = service.findById(id);
 		return ResponseEntity.ok(dto);
 	}
 	
 
 	@PostMapping
-	public ResponseEntity<SetorDTO> insert(@RequestBody SetorDTO dto) {
+	public ResponseEntity<TrabalhadorDTO> insert(@RequestBody TrabalhadorDTO dto) {
 		dto = service.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(dto.getId()).toUri();
@@ -48,7 +48,7 @@ public class SetorController {
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<SetorDTO> update(@PathVariable Long id, @RequestBody SetorDTO dto) {
+	public ResponseEntity<TrabalhadorDTO> update(@PathVariable Long id, @RequestBody TrabalhadorDTO dto) {
 		dto = service.update(id, dto);
 		return ResponseEntity.ok().body(dto);
 	}
